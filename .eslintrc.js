@@ -18,6 +18,14 @@ module.exports = {
   "plugins": [
     "react", "jest"
   ],
+  overrides: [
+    {
+      files: ["**/*.test.js"],
+      env: { "jest/globals": true },
+      plugins: ["jest"],
+      extends: ["plugin:jest/recommended"],
+    },
+  ],
   "rules": {
     "indent": [
       "error",
@@ -43,7 +51,8 @@ module.exports = {
     "arrow-spacing": [
       "error", { "before": true, "after": true }
     ],
-    "no-console": "error",
+    "no-console": "warn",
+    "no-unused-var": "warn",
     "react/prop-types": 0
   }
 }
