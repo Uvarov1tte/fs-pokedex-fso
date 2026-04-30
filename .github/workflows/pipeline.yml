@@ -38,7 +38,7 @@ jobs:
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
-    runs-on: ubunto-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Bump version and push tag
         if: ${{ github.event_name == 'push' }}
