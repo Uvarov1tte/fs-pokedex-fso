@@ -33,13 +33,13 @@ jobs:
           retention-days: 30
       - name: Run npm build
         run: npm run build
-      - name: Trigger deployment
-        if: ${{ github.event_name == 'push' }}
-        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
-  tag_release:
-    needs: simple_deployment_pipeline
-    runs-on: ubuntu-latest
-    steps:
+      # - name: Trigger deployment
+      #   if: ${{ github.event_name == 'push' }}
+      #   run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
+  # tag_release:
+  #   needs: simple_deployment_pipeline
+  #   runs-on: ubuntu-latest
+  #   steps:
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.75.0
         env:
