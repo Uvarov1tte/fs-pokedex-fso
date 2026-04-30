@@ -40,6 +40,8 @@ jobs:
     needs: simple_deployment_pipeline
     runs-on: ubuntu-latest
     steps:
+      - name: test token
+        run: echo ${{ secrets.GITHUB_TOKEN }}
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.75.0
         env:
