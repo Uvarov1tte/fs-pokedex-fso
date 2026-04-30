@@ -37,33 +37,36 @@ jobs:
   #     - name: Trigger deployment
   #       if: ${{ github.event_name == 'push'  &&  github.ref == 'refs/heads/master' }}
   #       run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
-  tag_release:
-    # needs: [simple_deployment_pipeline]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Bump version and push tag
-        # if: ${{ github.event_name == 'push'  &&  github.ref == 'refs/heads/master' }}
-        if: ${{ !contains(github.event.commits.*.message, '#skip') }}
-        uses: anothrNick/github-tag-action@1.75.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
-          DRY_RUN: true
-  # a_test_job:
+  # tag_release:
+  #   # needs: [simple_deployment_pipeline]
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: github context
+  #     - uses: actions/checkout@v6
+  #     - name: Bump version and push tag
+  #       # if: ${{ github.event_name == 'push'  &&  github.ref == 'refs/heads/master' }}
+  #       if: ${{ !contains(github.event.commits.*.message, '#skip') }}
+  #       uses: anothrNick/github-tag-action@1.75.0
   #       env:
-  #         GITHUB_CONTEXT: ${{ toJson(github) }}
-  #       run: echo "$GITHUB_CONTEXT"
-  #     - name: commits
-  #       env:
-  #         COMMITS: ${{ toJson(github.event.commits) }}
-  #       run: echo "$COMMITS"
-  #     - name: commit messages
-  #       env:
-  #         COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
-  #       run: echo "$COMMIT_MESSAGES"
-  
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         DEFAULT_BUMP: patch
+  #         DRY_RUN: true
+  a_test_job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: github context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: commits
+        env:
+          COMMITS: ${{ toJson(github.event.commits) }}
+        run: echo "$COMMITS"
+      - name: commit messages
+        env:
+          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
+        run: echo "$COMMIT_MESSAGES"
+      - name: check commit msg
+        env:
+          CONTAIN_SKIP: ${{ !contains(github.event.commits.*.message, '#skip') }}
+        run: echo "#CONTAIN_SKIP"
