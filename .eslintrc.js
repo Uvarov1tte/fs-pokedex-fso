@@ -18,14 +18,6 @@ module.exports = {
   "plugins": [
     "react", "jest"
   ],
-  overrides: [
-    {
-      files: ["**/*.test.js"],
-      env: { "jest/globals": true },
-      plugins: ["jest"],
-      extends: ["plugin:jest/recommended"],
-    },
-  ],
   "rules": {
     "indent": [
       "error",

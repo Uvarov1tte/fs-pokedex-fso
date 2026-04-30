@@ -15,7 +15,7 @@ module.exports = [
   },
   js.configs.recommended,
   {
-    files: ['app.js'],
+    files: ['app.js', 'jest.setup.js'],
     languageOptions: {
       ecmaVersion: 2018,
       sourceType: 'commonjs',
@@ -52,7 +52,7 @@ module.exports = [
       globals: {
         ...globals.browser,
         ...globals.es6,
-        ...globals.jest
+        ...globals.jest,
       }
     },
     settings: {
@@ -70,8 +70,9 @@ module.exports = [
       'no-trailing-spaces': 'error',
       'object-curly-spacing': ['error', 'always'],
       'arrow-spacing': ['error', { 'before': true, 'after': true }],
-      'no-console': 'error',
-      'react/prop-types': 0
+      'no-console': 0,
+      'react/prop-types': 0,
+      'no-unused-vars': 'warn'
     }
   }
 ]
