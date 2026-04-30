@@ -46,3 +46,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: true
           DEFAULT_BUMP: patch
+          GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
