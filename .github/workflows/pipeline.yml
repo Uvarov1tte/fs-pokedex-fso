@@ -69,4 +69,4 @@ jobs:
       - name: check commit msg
         env:
           CONTAIN_SKIP: ${{ !contains(github.event.commits.*.message, '#skip') }}
-        run: echo "#CONTAIN_SKIP"
+        run: echo "$CONTAIN_SKIP"
