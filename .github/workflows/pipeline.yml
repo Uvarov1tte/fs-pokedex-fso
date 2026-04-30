@@ -32,3 +32,5 @@ jobs:
           retention-days: 30
       - name: Run npm build
         run: npm run build
+      - name: Trigger deployment
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
