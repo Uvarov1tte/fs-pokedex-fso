@@ -33,12 +33,12 @@ jobs:
           retention-days: 30
       - name: Run npm build
         run: npm run build
-      # - name: check commit msg
-      #   env:
-      #     CONTAIN_SKIP: ${{ !contains(github.event.commits[0].message, '#skip') }}
-      #   run: echo "$CONTAIN_SKIP"
+      - name: check commit msg
+        env:
+          CONTAIN_SKIP: ${{ !contains(github.event.commits[0].message, '#skip') }}
+        run: echo "$CONTAIN_SKIP"
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && !contains(github.event.commits[0].message, '#skip') }}
+        if: ${{ github.event_name == 'push' && !contains(github.event.commits.*.message, '#skip') }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
@@ -46,8 +46,31 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Bump version and push tag
-        if: ${{ github.event_name == 'push' && !contains(github.event.commits[0].message, '#skip') }}
+        if: ${{ github.event_name == 'push' && !contains(github.event.commits.*.message, '#skip') }}
         uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+  discord_notify:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-latest
+    if: ${{ always() && github.event_name == 'push' }}
+    steps:
+      - uses: sarisia/actions-status-discord@v1
+        if: ${{ needs.simple_deployment_pipeline.result == 'failed' }}
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: Deployment failed
+          description: New version failed to deploy
+      - uses: sarisia/actions-status-discord@v1
+        if: ${{ needs.simple_deployment_pipeline.result == 'success'}}
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          nodetail: true
+          title: Successfully deployed a new version
+          description: |
+            Commit: `${{ github.event.commit.*.id }}`
+            Author: `${{ github.event.commit.*.author.name }}`
+            Message: `${{ github.event.commit.*.message }}`
