@@ -8,7 +8,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  simple_deployment_pipeline:
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -33,11 +33,18 @@ jobs:
           retention-days: 30
       - name: Run npm build
         run: npm run build
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
       - name: Trigger deployment
         if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip') }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
   tag_release:
-    needs: [simple_deployment_pipeline]
+    needs: [deploy]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -48,19 +55,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
   discord_notify:
-    needs: [simple_deployment_pipeline]
+    needs: [deploy]
     runs-on: ubuntu-latest
     if: ${{ always() && github.event_name == 'push' }}
     steps:
       - uses: sarisia/actions-status-discord@v1
-        if: ${{ needs.simple_deployment_pipeline.result == 'failed' }}
+        if: ${{ needs.deploy.result == 'failed' }}
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: ${{ job.status }}
           title: Deployment failed
           description: New version failed to deploy
       - uses: sarisia/actions-status-discord@v1
-        if: ${{ needs.simple_deployment_pipeline.result == 'success'}}
+        if: ${{ needs.deploy.result == 'success'}}
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: ${{ job.status }}
